@@ -6,14 +6,16 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class ConsultantResponseDTO {
-
+public class ConsultancyContractResDTO extends ContractResponseDTO {
+// special from client related to consultancy
     private String firmName;
     private String firmType;
     private String firmEmail;
     private String firmAddress;
     private String firmPhone;
  
+    // special from consultancy
+
     private long consultancyId;
     private LocalDate FinancialYear;
     private String consultancyType;
@@ -26,7 +28,5 @@ public class ConsultantResponseDTO {
     private String approvalStatus;
     private String contractStatus;
     private String engagementDate;
-
-
 
 }

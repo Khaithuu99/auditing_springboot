@@ -6,27 +6,27 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class ConsultantResponseDTO {
+public class AuditContractResDTO extends ContractResponseDTO {
 
+    // special from client related to Audit 
+    private long auditId;
     private String firmName;
     private String firmType;
     private String firmEmail;
     private String firmAddress;
     private String firmPhone;
- 
-    private long consultancyId;
+
+        // special from Audit 
+
     private LocalDate FinancialYear;
-    private String consultancyType;
-    private String consultancyScope;
-    private String consultancyObjective; 
-    private String expert; 
-    private String budget;
-    private String feeStructure;
+    private String AreaAudit;
+    private String auditingType;
+    private String auditingStandard;
+    private String financialStatement;
+    private String previousAudit;
 
     private String approvalStatus;
     private String contractStatus;
     private String engagementDate;
-
-
 
 }

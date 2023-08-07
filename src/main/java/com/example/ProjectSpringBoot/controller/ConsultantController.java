@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ProjectSpringBoot.DTO.ConsultantRequestDTO;
 import com.example.ProjectSpringBoot.DTO.ConsultantResponseDTO;
 import com.example.ProjectSpringBoot.exception.ResourceNotFoundException;
+import com.example.ProjectSpringBoot.model.Consultancy;
 import com.example.ProjectSpringBoot.model.Client;
 import com.example.ProjectSpringBoot.model.Consultancy;
 import com.example.ProjectSpringBoot.repository.ConsultantRepository;
@@ -42,21 +43,50 @@ public class ConsultantController {
        List<ConsultantResponseDTO> list = new ArrayList<>();
        for(Consultancy consultancy: consultantRepository.findAll()){
         ConsultantResponseDTO consultantResponseDTO = modelMapper.map(consultancy,ConsultantResponseDTO.class);
-        consultantResponseDTO.setFirstName(consultancy.getClient().getFirstName());
-        consultantResponseDTO.setLastName(consultancy.getClient().getLastName());
-        consultantResponseDTO.setEmail(consultancy.getClient().getEmail());
-        consultantResponseDTO.setAddress(consultancy.getClient().getAddress());
-        consultantResponseDTO.setPhone(consultancy.getClient().getPhone());
-        consultantResponseDTO.setFirmName(consultancy.getFirmName());
-        consultantResponseDTO.setFirmType(consultancy.getFirmType());
-        consultantResponseDTO.setPlace(consultancy.getPlace());
+        consultantResponseDTO.setFirmEmail(consultancy.getClient().getFirmEmail());
+        consultantResponseDTO.setFirmAddress(consultancy.getClient().getFirmAddress());
+        consultantResponseDTO.setFirmPhone(consultancy.getClient().getFirmPhone());
+        consultantResponseDTO.setFirmName(consultancy.getClient().getFirmName());
+        consultantResponseDTO.setFirmType(consultancy.getClient().getFirmType());
         consultantResponseDTO.setFinancialYear(consultancy.getFinancialYear());
         consultantResponseDTO.setConsultancyType(consultancy.getConsultancyType());
+        consultantResponseDTO.setConsultancyScope(consultancy.getConsultancyScope());
+        consultantResponseDTO.setConsultancyObjective(consultancy.getConsultancyObjective());
+        consultantResponseDTO.setExpert(consultancy.getExpert());
+        consultantResponseDTO.setBudget(consultancy.getBudget());
+        consultantResponseDTO.setFeeStructure(consultancy.getFeeStructure());
 
             list.add(consultantResponseDTO);
        }
        return list;
     }
+
+
+
+        // get all consultant by client id
+    @GetMapping("/consultancy/client/{id}")
+    public List<ConsultantResponseDTO> getAllAuditByClientId(@PathVariable long id) {
+       List<ConsultantResponseDTO> list = new ArrayList<>();
+       for(Consultancy consultancy: consultantRepository.findByClientId(id)){
+        ConsultantResponseDTO consultantResponseDTO = modelMapper.map(consultancy,ConsultantResponseDTO.class);
+        consultantResponseDTO.setFirmEmail(consultancy.getClient().getFirmEmail());
+        consultantResponseDTO.setFirmAddress(consultancy.getClient().getFirmAddress());
+        consultantResponseDTO.setFirmPhone(consultancy.getClient().getFirmPhone());
+        consultantResponseDTO.setFirmName(consultancy.getClient().getFirmName());
+        consultantResponseDTO.setFirmType(consultancy.getClient().getFirmType());
+        consultantResponseDTO.setFinancialYear(consultancy.getFinancialYear());
+        consultantResponseDTO.setConsultancyType(consultancy.getConsultancyType());
+        consultantResponseDTO.setConsultancyScope(consultancy.getConsultancyScope());
+        consultantResponseDTO.setConsultancyObjective(consultancy.getConsultancyObjective());
+        consultantResponseDTO.setExpert(consultancy.getExpert());
+        consultantResponseDTO.setBudget(consultancy.getBudget());
+        consultantResponseDTO.setFeeStructure(consultancy.getFeeStructure());
+
+            list.add(consultantResponseDTO);
+       }
+       return list;
+    }
+
 
 
     @PostMapping("/consultancy")
@@ -67,20 +97,25 @@ public class ConsultantController {
 
         Consultancy consultancy = modelMapper.map(consultantRequestDTO, Consultancy.class);
         consultancy.setClient(client);
+
+         consultancy.setApprovalStatus("Not Approved");
+        consultancy.setContractStatus("Not Generated");
+        consultancy.setEngagementDate("Not Set");
+
         return consultantRepository.save(consultancy);
     }
        // update
     @PutMapping("/consultancy/{id}")
-    public ResponseEntity<?> updateConsultant(@PathVariable("id") int id, @RequestBody Consultancy consultant) {
+    public ResponseEntity<?> updateConsultant(@PathVariable("id") long id, @RequestBody Consultancy consultant) {
         Consultancy updateConsultant = consultantRepository.findById(id)
         .orElseThrow(() ->new ResourceNotFoundException("consultant not found"));
-           
-            updateConsultant.setFirmName(consultant.getFirmName());
-            updateConsultant.setFirmType(consultant.getFirmType());
-            updateConsultant.setPlace(consultant.getPlace());
             updateConsultant.setFinancialYear(consultant.getFinancialYear());
             updateConsultant.setConsultancyType(consultant.getConsultancyType());
-            consultantRepository.save(consultant);
+            updateConsultant.setConsultancyScope(consultant.getConsultancyScope());
+            updateConsultant.setConsultancyObjective(consultant.getConsultancyObjective());
+            updateConsultant.setExpert(consultant.getExpert());
+            updateConsultant.setBudget(consultant.getBudget());
+            updateConsultant.setFeeStructure(consultant.getFeeStructure());
          
             Consultancy consultant2 = consultantRepository.save(updateConsultant);
 
@@ -88,14 +123,14 @@ public class ConsultantController {
     }
 
     @GetMapping("/consultancy/{id}")
-    public ResponseEntity<Consultancy> getConsultantById(@PathVariable Integer id) {
+    public ResponseEntity<Consultancy> getConsultantById(@PathVariable long id) {
         Consultancy consultant = consultantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid Id"));
         return ResponseEntity.ok(consultant);
     }
 
     @DeleteMapping("/consultancy/{id}")
-    public ResponseEntity<Map<String,Boolean>> deleteAudit(@PathVariable("id") Integer id) {
+    public ResponseEntity<Map<String,Boolean>> deleteAudit(@PathVariable("id") long id) {
         Consultancy findConsultant = consultantRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Consultant not found"));
         consultantRepository.delete(findConsultant);
@@ -105,5 +140,31 @@ public class ConsultantController {
         return ResponseEntity.ok(response);
  
     }
+
+
+    @PutMapping("/consultancy/approvalStatus/{id}")
+public ResponseEntity<?> updateApprovalStatus(@PathVariable("id") Long id) {
+    Consultancy updateConsultancy = consultantRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateConsultancy.setApprovalStatus("Approved");
+
+    Consultancy updatedConsultancy = consultantRepository.save(updateConsultancy);
+
+    return ResponseEntity.ok(updatedConsultancy);
+}
+
+ @PutMapping("/consultancy/engagementDate/{id}")
+public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @RequestBody String engagementDate) {
+    Consultancy updateConsultancy = consultantRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateConsultancy.setEngagementDate(engagementDate);
+
+    Consultancy updatedConsultancy = consultantRepository.save(updateConsultancy);
+
+    return ResponseEntity.ok(updatedConsultancy);
+}
+
 
 }

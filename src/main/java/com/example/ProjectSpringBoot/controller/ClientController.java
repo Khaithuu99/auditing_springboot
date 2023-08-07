@@ -45,15 +45,12 @@ public class ClientController {
         Client updateClient = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid Id"));
 
-                updateClient.setFirstName(client.getFirstName());
-                updateClient.setLastName(client.getLastName());
-                updateClient.setEmail(client.getEmail());
-                updateClient.setAddress(client.getAddress());
-                updateClient.setPhone(client.getPhone());
-       
-        
-                clientRepository.save(client);
-                
+                updateClient.setFirmName(client.getFirmName());
+                updateClient.setFirmType(client.getFirmType());
+                // updateClient.setFirmEmail(client.getFirmEmail());
+                updateClient.setFirmAddress(client.getFirmAddress());
+                updateClient.setFirmPhone(client.getFirmPhone());
+                       
                 Client client2 = clientRepository.save(updateClient);
         
                 return ResponseEntity.ok(client2);
@@ -83,8 +80,8 @@ public class ClientController {
 
     @PostMapping("/client/login")
     public ResponseEntity<?> clientLogin(@RequestBody Client client){
-        Client client1 = clientRepository.getByEmail(client.getEmail());
-        if(client1.getPassword().equals(client.getPassword())){
+        Client client1 = clientRepository.getByEmail(client.getFirmEmail());
+        if(client1.getFirmPassword().equals(client.getFirmPassword())){
             return ResponseEntity.ok(client1);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

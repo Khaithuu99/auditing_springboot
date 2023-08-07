@@ -1,6 +1,7 @@
 package com.example.ProjectSpringBoot.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-
+import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 
@@ -18,15 +19,22 @@ import lombok.Data;
 @Table
 public class Audit {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+     @Id
+    @GeneratedValue(generator = "unique-id-generator")
+    @GenericGenerator(name = "unique-id-generator", strategy = "com.example.ProjectSpringBoot.Services.UniqueIdGenerator")
+    
 
-    private int auditId;
-    private String FirmName;
-    private String FirmType;
-    private String Place;
-    private Date FinancialYear;
+    private long auditId;
+    private LocalDate FinancialYear;
     private String AreaAudit;
+    private String auditingType;
+    private String auditingStandard;
+    private String financialStatement;
+    private String previousAudit;
+
+     private String approvalStatus;
+    private String contractStatus;
+    private String engagementDate;
 
     @ManyToOne
     private Client client;

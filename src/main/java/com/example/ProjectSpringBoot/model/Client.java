@@ -17,11 +17,11 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private long clientId;
-    private String firstName;
-    private String lastName;
+    private String firmName;
+    private String firmType;
     @Column(unique = true)
-    private String email;
-    private String address;
-    private String phone;
-    private String password;
+    private String firmEmail;
+    private String firmAddress;
+    private String firmPhone;
+    private String firmPassword;
 }

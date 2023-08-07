@@ -1,6 +1,7 @@
 package com.example.ProjectSpringBoot.DTO;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.UUID;
 
 import lombok.Data;
 import lombok.Getter;
@@ -10,11 +11,17 @@ import lombok.Setter;
 @Setter
 @Getter
 public class AuditRequestDTO {
-    private long clientId;
-
-    private String FirmName;
-    private String FirmType;
-    private String Place;
-    private Date FinancialYear;
+  private long auditId;
+    private LocalDate FinancialYear;
     private String AreaAudit;
+    private String auditingType;
+    private String auditingStandard;
+    private String financialStatement;
+    private String previousAudit;
+
+     private String approvalStatus;
+    private String contractStatus;
+    private String engagementDate;
+
+    private long clientId;
 }

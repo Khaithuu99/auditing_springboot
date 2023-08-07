@@ -22,6 +22,7 @@ import com.example.ProjectSpringBoot.DTO.AuditRequestDTO;
 import com.example.ProjectSpringBoot.DTO.AuditResponseDTO;
 import com.example.ProjectSpringBoot.exception.ResourceNotFoundException;
 import com.example.ProjectSpringBoot.model.Audit;
+import com.example.ProjectSpringBoot.model.Audit;
 import com.example.ProjectSpringBoot.model.Client;
 import com.example.ProjectSpringBoot.repository.AuditRepository;
 
@@ -45,16 +46,44 @@ public class AuditController {
        List<AuditResponseDTO> list = new ArrayList<>();
        for(Audit audit: auditRepository.findAll()){
         AuditResponseDTO auditResponseDTO = modelMapper.map(audit,AuditResponseDTO.class);
-        auditResponseDTO.setFirstName(audit.getClient().getFirstName());
-        auditResponseDTO.setLastName(audit.getClient().getLastName());
-        auditResponseDTO.setEmail(audit.getClient().getEmail());
-        auditResponseDTO.setAddress(audit.getClient().getAddress());
-        auditResponseDTO.setPhone(audit.getClient().getPhone());
-        auditResponseDTO.setFirmName(audit.getFirmName());
-        auditResponseDTO.setFirmType(audit.getFirmType());
-        auditResponseDTO.setPlace(audit.getPlace());
+        auditResponseDTO.setFirmEmail(audit.getClient().getFirmEmail());
+        auditResponseDTO.setFirmAddress(audit.getClient().getFirmAddress());
+        auditResponseDTO.setFirmPhone(audit.getClient().getFirmPhone());
+        auditResponseDTO.setFirmName(audit.getClient().getFirmName());
+        auditResponseDTO.setFirmType(audit.getClient().getFirmType());
         auditResponseDTO.setFinancialYear(audit.getFinancialYear());
         auditResponseDTO.setAreaAudit(audit.getAreaAudit());
+        auditResponseDTO.setAuditingType(audit.getAuditingType());
+        auditResponseDTO.setAuditingStandard(audit.getAuditingStandard());
+        auditResponseDTO.setFinancialStatement(audit.getFinancialStatement());
+        auditResponseDTO.setPreviousAudit(audit.getPreviousAudit());
+        auditResponseDTO.setAuditId(audit.getAuditId());
+
+
+            list.add(auditResponseDTO);
+       }
+       return list;
+    }
+
+    // get all audit by client id
+    @GetMapping("/audit/client/{id}")
+    public List<AuditResponseDTO> getAllAuditByClientId(@PathVariable long id) {
+       List<AuditResponseDTO> list = new ArrayList<>();
+       for(Audit audit: auditRepository.findByClientId(id)){
+        AuditResponseDTO auditResponseDTO = modelMapper.map(audit,AuditResponseDTO.class);
+        auditResponseDTO.setFirmEmail(audit.getClient().getFirmEmail());
+        auditResponseDTO.setFirmAddress(audit.getClient().getFirmAddress());
+        auditResponseDTO.setFirmPhone(audit.getClient().getFirmPhone());
+        auditResponseDTO.setFirmName(audit.getClient().getFirmName());
+        auditResponseDTO.setFirmType(audit.getClient().getFirmType());
+        auditResponseDTO.setFinancialYear(audit.getFinancialYear());
+        auditResponseDTO.setAreaAudit(audit.getAreaAudit());
+        auditResponseDTO.setAuditingType(audit.getAuditingType());
+        auditResponseDTO.setAuditingStandard(audit.getAuditingStandard());
+        auditResponseDTO.setFinancialStatement(audit.getFinancialStatement());
+        auditResponseDTO.setPreviousAudit(audit.getPreviousAudit());
+        auditResponseDTO.setAuditId(audit.getAuditId());
+
 
             list.add(auditResponseDTO);
        }
@@ -71,21 +100,27 @@ public class AuditController {
 
         Audit audit = modelMapper.map(auditRequestDTO, Audit.class);
         audit.setClient(client);
+
+        audit.setApprovalStatus("Not Approved");
+        audit.setContractStatus("Not Generated");
+        audit.setEngagementDate("Not Set");
+
         return auditRepository.save(audit);
     }
 
        // update audit
        @PutMapping("/audit/{id}")
-    public ResponseEntity<?> updateAudit(@PathVariable("id") int id, @RequestBody Audit audit) {
+    public ResponseEntity<?> updateAudit(@PathVariable("id") long id, @RequestBody Audit audit) {
         Audit updateAudit = auditRepository.findById(id)
         .orElseThrow(() ->new ResourceNotFoundException("audit not found"));
       
-            updateAudit.setFirmName(audit.getFirmName());
-            updateAudit.setFirmType(audit.getFirmType());
-            updateAudit.setPlace(audit.getPlace());
             updateAudit.setFinancialYear(audit.getFinancialYear());
             updateAudit.setAreaAudit(audit.getAreaAudit());
-            auditRepository.save(audit);
+            updateAudit.setAuditingType(audit.getAuditingType());
+            updateAudit.setAuditingStandard(audit.getAuditingStandard());
+            updateAudit.setFinancialStatement(audit.getFinancialStatement());
+            updateAudit.setPreviousAudit(audit.getPreviousAudit());
+
         
             Audit audit2 = auditRepository.save(updateAudit);
 
@@ -94,7 +129,7 @@ public class AuditController {
 
     //get  by ID
     @GetMapping("/audit/{id}")
-    public ResponseEntity<Audit> getAuditById(@PathVariable Integer id) {
+    public ResponseEntity<Audit> getAuditById(@PathVariable long id) {
         Audit audit = auditRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid Id"));
         return ResponseEntity.ok(audit);
@@ -103,7 +138,7 @@ public class AuditController {
     
     //delete audit
     @DeleteMapping("/audit/{id}")
-    public ResponseEntity<Map<String,Boolean>> deleteAudit(@PathVariable("id") Integer id) {
+    public ResponseEntity<Map<String,Boolean>> deleteAudit(@PathVariable("id") long id) {
         Audit findAudit = auditRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Audit not found"));
         auditRepository.delete(findAudit);
@@ -113,7 +148,31 @@ public class AuditController {
         return ResponseEntity.ok(response);
  
     }
+
     
+    @PutMapping("/audit/approvalStatus/{id}")
+public ResponseEntity<?> updateApprovalStatus(@PathVariable("id") Long id) {
+    Audit updateAudit = auditRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateAudit.setApprovalStatus("Approved");
+
+    Audit updatedAudit = auditRepository.save(updateAudit);
+
+    return ResponseEntity.ok(updatedAudit);
+}
+
+ @PutMapping("/audit/engagementDate/{id}")
+public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @RequestBody String engagementDate) {
+    Audit updateAudit = auditRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateAudit.setEngagementDate(engagementDate);
+
+    Audit updatedAudit = auditRepository.save(updateAudit);
+
+    return ResponseEntity.ok(updatedAudit);
+}
 
 
 }
