@@ -175,4 +175,17 @@ public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @Requ
 }
 
 
+@PutMapping("/audit/contractStatus/{id}")
+public ResponseEntity<?> updateContractStatus(@PathVariable("id") Long id) {
+    Audit updateAudit = auditRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateAudit.setContractStatus("Agreed and Submitted");
+
+    Audit updatedAudit = auditRepository.save(updateAudit);
+
+    return ResponseEntity.ok(updatedAudit);
+}
+
+
 }

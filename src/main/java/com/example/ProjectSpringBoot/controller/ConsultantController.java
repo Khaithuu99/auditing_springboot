@@ -22,6 +22,7 @@ import com.example.ProjectSpringBoot.DTO.ConsultantRequestDTO;
 import com.example.ProjectSpringBoot.DTO.ConsultantResponseDTO;
 import com.example.ProjectSpringBoot.exception.ResourceNotFoundException;
 import com.example.ProjectSpringBoot.model.Consultancy;
+import com.example.ProjectSpringBoot.model.Audit;
 import com.example.ProjectSpringBoot.model.Client;
 import com.example.ProjectSpringBoot.model.Consultancy;
 import com.example.ProjectSpringBoot.repository.ConsultantRepository;
@@ -165,6 +166,19 @@ public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @Requ
 
     return ResponseEntity.ok(updatedConsultancy);
 }
+
+@PutMapping("/consultancy/contractStatus/{id}")
+public ResponseEntity<?> updateContractStatus(@PathVariable("id") Long id) {
+    Consultancy updateConsultancy = consultantRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateConsultancy.setContractStatus("Agreed and Submitted");
+
+    Consultancy updatedConsultancy = consultantRepository.save(updateConsultancy);
+
+    return ResponseEntity.ok(updatedConsultancy);
+}
+
 
 
 }

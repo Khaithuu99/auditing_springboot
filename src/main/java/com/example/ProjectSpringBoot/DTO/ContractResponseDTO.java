@@ -13,8 +13,8 @@ public class ContractResponseDTO {
     private String contractType;
 
     // Other contract details
-    private LocalDate startDate;
-    private LocalDate endDate;
+ private LocalDate startDate;
+ private LocalDate endDate;
     private String termsAndConditions;
     private String pricingDetails;
     private String additionalNotes;

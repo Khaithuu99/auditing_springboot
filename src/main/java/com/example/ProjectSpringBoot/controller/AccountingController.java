@@ -23,6 +23,7 @@ import com.example.ProjectSpringBoot.DTO.AccountResponseDTO;
 import com.example.ProjectSpringBoot.exception.ResourceNotFoundException;
 import com.example.ProjectSpringBoot.model.Accounting;
 import com.example.ProjectSpringBoot.model.Client;
+import com.example.ProjectSpringBoot.model.Consultancy;
 import com.example.ProjectSpringBoot.repository.AccountingRepository;
 
 @CrossOrigin
@@ -163,5 +164,17 @@ public class AccountingController {
         return ResponseEntity.ok(response);
 
     }
+
+    @PutMapping("/accounting/contractStatus/{id}")
+public ResponseEntity<?> updateContractStatus(@PathVariable("id") Long id) {
+    Accounting updateAccounting = accountingRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateAccounting.setContractStatus("Agreed and Submitted");
+
+    Accounting updatedAccounting = accountingRepository.save(updateAccounting);
+
+    return ResponseEntity.ok(updatedAccounting);
+}
 
 }
