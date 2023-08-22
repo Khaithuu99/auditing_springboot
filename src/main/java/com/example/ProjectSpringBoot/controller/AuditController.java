@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ProjectSpringBoot.DTO.AuditRequestDTO;
 import com.example.ProjectSpringBoot.DTO.AuditResponseDTO;
+import com.example.ProjectSpringBoot.DTO.EngagementDTO;
 import com.example.ProjectSpringBoot.exception.ResourceNotFoundException;
-import com.example.ProjectSpringBoot.model.Audit;
 import com.example.ProjectSpringBoot.model.Audit;
 import com.example.ProjectSpringBoot.model.Client;
 import com.example.ProjectSpringBoot.repository.AuditRepository;
@@ -38,6 +38,11 @@ public class AuditController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @GetMapping("/audit/count")
+    public int countAudit() {
+        return auditRepository.findAll().size();
+    }
 
     
     // get all audit
@@ -163,11 +168,11 @@ public ResponseEntity<?> updateApprovalStatus(@PathVariable("id") Long id) {
 }
 
  @PutMapping("/audit/engagementDate/{id}")
-public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @RequestBody String engagementDate) {
+public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @RequestBody EngagementDTO engagementDTO) {
     Audit updateAudit = auditRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("account not found"));
 
-    updateAudit.setEngagementDate(engagementDate);
+    updateAudit.setEngagementDate(engagementDTO.getEngagementDate());
 
     Audit updatedAudit = auditRepository.save(updateAudit);
 
@@ -185,6 +190,16 @@ public ResponseEntity<?> updateContractStatus(@PathVariable("id") Long id) {
     Audit updatedAudit = auditRepository.save(updateAudit);
 
     return ResponseEntity.ok(updatedAudit);
+}
+
+@PutMapping("/audit/contractCancel/{id}")
+public ResponseEntity<?> cancelContract(@PathVariable("id") Long id) {
+    Audit updateAudit = auditRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateAudit.setContractStatus("Cancelled");
+
+    return ResponseEntity.ok(auditRepository.save(updateAudit));
 }
 
 

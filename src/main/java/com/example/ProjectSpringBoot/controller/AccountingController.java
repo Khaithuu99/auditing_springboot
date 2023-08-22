@@ -1,5 +1,6 @@
 package com.example.ProjectSpringBoot.controller;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ProjectSpringBoot.DTO.AccountRequestDTO;
 import com.example.ProjectSpringBoot.DTO.AccountResponseDTO;
+import com.example.ProjectSpringBoot.DTO.EngagementDTO;
 import com.example.ProjectSpringBoot.exception.ResourceNotFoundException;
 import com.example.ProjectSpringBoot.model.Accounting;
 import com.example.ProjectSpringBoot.model.Client;
-import com.example.ProjectSpringBoot.model.Consultancy;
 import com.example.ProjectSpringBoot.repository.AccountingRepository;
 
 @CrossOrigin
@@ -36,6 +37,11 @@ public class AccountingController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @GetMapping("/accounting/count")
+    public int countAccount() {
+        return accountingRepository.findAll().size();
+    }
 
     @GetMapping("/accounting")
     public List<AccountResponseDTO> getAllAccount() {
@@ -84,7 +90,7 @@ public class AccountingController {
         }
         return list;
     }
-
+// Annotation
     @PostMapping("/accounting")
     public Accounting addAccounting(@RequestBody AccountRequestDTO accountRequestDTO) {
         Client client = new Client();
@@ -134,12 +140,12 @@ public class AccountingController {
 
     // Assign engagement date
 
-    @PutMapping("/accounting/engagementdate/{id}")
-    public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @RequestBody String engagementDate) {
+    @PutMapping("/accounting/engagementDate/{id}")
+    public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @RequestBody EngagementDTO engagementDTO) {
         Accounting updateAccount = accountingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("account not found"));
 
-        updateAccount.setEngagementDate(engagementDate);
+        updateAccount.setEngagementDate(engagementDTO.getEngagementDate());
 
         Accounting updatedAccount = accountingRepository.save(updateAccount);
 
@@ -176,5 +182,18 @@ public ResponseEntity<?> updateContractStatus(@PathVariable("id") Long id) {
 
     return ResponseEntity.ok(updatedAccounting);
 }
+
+ @PutMapping("/accounting/contractCancel/{id}")
+public ResponseEntity<?> cancelContract(@PathVariable("id") Long id) {
+    Accounting updateAccounting = accountingRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("account not found"));
+
+    updateAccounting.setContractStatus("Cancelled");
+
+    Accounting updatedAccounting = accountingRepository.save(updateAccounting);
+
+    return ResponseEntity.ok(updatedAccounting);
+}
+
 
 }

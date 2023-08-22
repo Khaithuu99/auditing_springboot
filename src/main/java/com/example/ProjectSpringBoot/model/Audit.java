@@ -12,6 +12,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.example.ProjectSpringBoot.DTO.EngagementDTO;
+
 import lombok.Data;
 
 @Data

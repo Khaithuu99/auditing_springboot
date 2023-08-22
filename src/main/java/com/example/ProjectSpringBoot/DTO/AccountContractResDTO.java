@@ -7,6 +7,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
+
 public class AccountContractResDTO extends ContractResponseDTO{
 // special from client related to accounting
     private long accountId;

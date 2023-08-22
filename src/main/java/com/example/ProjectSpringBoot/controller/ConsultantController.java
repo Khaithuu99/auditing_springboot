@@ -20,11 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ProjectSpringBoot.DTO.ConsultantRequestDTO;
 import com.example.ProjectSpringBoot.DTO.ConsultantResponseDTO;
+import com.example.ProjectSpringBoot.DTO.EngagementDTO;
 import com.example.ProjectSpringBoot.exception.ResourceNotFoundException;
 import com.example.ProjectSpringBoot.model.Consultancy;
-import com.example.ProjectSpringBoot.model.Audit;
 import com.example.ProjectSpringBoot.model.Client;
-import com.example.ProjectSpringBoot.model.Consultancy;
 import com.example.ProjectSpringBoot.repository.ConsultantRepository;
 
 @CrossOrigin
@@ -37,6 +36,11 @@ public class ConsultantController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @GetMapping("/consultancy/count")
+    public int countCnsultancy() {
+        return consultantRepository.findAll().size();
+    }
     
     // get all consultant
     @GetMapping("/consultancy")
@@ -156,11 +160,11 @@ public ResponseEntity<?> updateApprovalStatus(@PathVariable("id") Long id) {
 }
 
  @PutMapping("/consultancy/engagementDate/{id}")
-public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @RequestBody String engagementDate) {
+public ResponseEntity<?> updateEngagementDate(@PathVariable("id") Long id, @RequestBody EngagementDTO engagementDTO) {
     Consultancy updateConsultancy = consultantRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("account not found"));
 
-    updateConsultancy.setEngagementDate(engagementDate);
+    updateConsultancy.setEngagementDate(engagementDTO.getEngagementDate());
 
     Consultancy updatedConsultancy = consultantRepository.save(updateConsultancy);
 
@@ -179,6 +183,15 @@ public ResponseEntity<?> updateContractStatus(@PathVariable("id") Long id) {
     return ResponseEntity.ok(updatedConsultancy);
 }
 
+@PutMapping("/consultancy/contractCancel/{id}")
+public ResponseEntity<?> cancelContract(@PathVariable("id") Long id) {
+    Consultancy updateConsultancy = consultantRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("consultancy not found"));
+
+    updateConsultancy.setContractStatus("Cancelled");
+
+    return ResponseEntity.ok(consultantRepository.save(updateConsultancy));
+}
 
 
 }

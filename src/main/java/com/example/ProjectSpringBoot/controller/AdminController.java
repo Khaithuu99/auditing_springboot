@@ -1,5 +1,6 @@
 package com.example.ProjectSpringBoot.controller;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,9 @@ public class AdminController {
 
     @PostMapping("/admin")
     public Admin addAdmin(@RequestBody Admin admin) {
+        String pass =admin.getPassword();
+        String encodedPassword = Base64.getEncoder().encodeToString(pass.getBytes());
+        admin.setPassword(encodedPassword);
         return adminRepository.save(admin);
     }
 
@@ -77,7 +81,10 @@ public class AdminController {
      @PostMapping("/admin/login")
     public ResponseEntity<?> adminLogin(@RequestBody Admin admin){
         Admin admin1 = adminRepository.getByEmail(admin.getEmail());
-        if(admin1.getPassword().equals(admin.getPassword())){
+        String pass = admin.getPassword();
+        String encryptedPass = Base64.getEncoder().encodeToString(pass.getBytes());
+
+        if(admin1.getPassword().equals(encryptedPass)){
             return ResponseEntity.ok(admin1);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

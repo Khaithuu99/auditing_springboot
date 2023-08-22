@@ -1,5 +1,6 @@
 package com.example.ProjectSpringBoot.controller;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,11 @@ public class ClientController {
     @Autowired
     private ClientRepository clientRepository;
 
+    @GetMapping("/client/count")
+    public int countClient() {
+        return clientRepository.findAll().size();
+    }
+
     @GetMapping("/client")
     public List<Client> getAllClients() {
         return clientRepository.findAll();
@@ -37,6 +43,9 @@ public class ClientController {
 
     @PostMapping("/client")
     public Client addClient(@RequestBody Client client) {
+        String pass = client.getFirmPassword();
+        String encodedPassword = Base64.getEncoder().encodeToString(pass.getBytes());
+        client.setFirmPassword(encodedPassword);
         return clientRepository.save(client);
     }
 
@@ -81,7 +90,11 @@ public class ClientController {
     @PostMapping("/client/login")
     public ResponseEntity<?> clientLogin(@RequestBody Client client){
         Client client1 = clientRepository.getByEmail(client.getFirmEmail());
-        if(client1.getFirmPassword().equals(client.getFirmPassword())){
+
+        String pass = client.getFirmPassword();
+        String encryptedPass = Base64.getEncoder().encodeToString(pass.getBytes());
+
+        if(client1.getFirmPassword().equals(encryptedPass)){
             return ResponseEntity.ok(client1);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
